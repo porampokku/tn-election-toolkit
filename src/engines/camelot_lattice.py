@@ -477,6 +477,36 @@ def parse_with_camelot_lattice(pdf_path):
         return text
 
     df.columns = [_fix_header(col) for col in df.columns]
+    
+    # --------------------------------------------------
+    # Standardise administrative column names
+    # --------------------------------------------------
+
+    rename_map = {}
+
+    for col in df.columns:
+
+        lower = str(col).lower()
+
+        if "serial no" in lower and "polling" in lower:
+            rename_map[col] = "PS. No"
+
+        elif "valid" in lower:
+            rename_map[col] = "No. Of Valid Votes"
+
+        elif "rejected" in lower:
+            rename_map[col] = "No. Of Rejected Votes"
+
+        elif "tender" in lower:
+            rename_map[col] = "No. Of Tendered Votes"
+
+        elif lower.strip() == "nota":
+            rename_map[col] = "NOTA"
+
+        elif lower.strip() == "total":
+            rename_map[col] = "Total"
+
+    df = df.rename(columns=rename_map)
 
     # --------------------------------------------------
     # Remove repeated page headers that slipped through
